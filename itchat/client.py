@@ -55,19 +55,25 @@ class client(object):
         if data and data.group(1) == '200': 
             self.uuid = data.group(2)
             return self.uuid
-    def get_QR(self, uuid = None):
+    '''
+    add some paramter to controll QR create @leechen2014
+    '''
+    def get_QR(self, uuid = None,path=None,imgName=None,isOpen=True):
         try:
             if uuid == None: uuid = self.uuid
             url = '%s/qrcode/%s'%(BASE_URL, uuid)
             r = self.s.get(url, stream = True)
-            QR_DIR = 'QR.jpg'
+            if path == None:path=''
+            if imgName=None:imagName='QR.jpg'
+            QR_DIR=path+imgName #QR_DIR = 'QR.jpg'
             with open(QR_DIR, 'wb') as f: f.write(r.content)
-            if config.OS == 'Darwin':
-                subprocess.call(['open', QR_DIR])
-            elif config.OS == 'Linux':
-                subprocess.call(['xdg-open', QR_DIR])
-            else:
-                os.startfile(QR_DIR)
+            if isOpen==True:
+                if config.OS == 'Darwin':
+                    subprocess.call(['open', QR_DIR])
+                elif config.OS == 'Linux':
+                    subprocess.call(['xdg-open', QR_DIR])
+                else:
+                    os.startfile(QR_DIR)
             return True
         except:
             return False
